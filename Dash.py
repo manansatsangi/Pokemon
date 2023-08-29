@@ -1,41 +1,42 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[11]:
-
-
 import pandas as pd
+
 import numpy as np
+
 import matplotlib.pyplot as plt
+
 import seaborn as sns
-#import networkx as nx
+
 import os
+
+import warnings
 
 warnings.filterwarnings("ignore")
 
+
+
 import dash
+
 import dash_core_components as dcc
+
 import dash_html_components as html
+
 from dash.dependencies import Input, Output
+
 import pandas as pd
+
 import plotly.express as px
 
 
-# In[12]:
+
+# URL of the raw CSV file on GitHub
+
+csv_url = "https://raw.githubusercontent.com/manansatsangi/Pokemon/master/pokedex_(Update_05.20).csv"
 
 
-#df_pokemon = pd.read_csv("s3://sagemaker-studio-qfeqz4684qk/pokedex_(Update_05.20).csv")
 
+# Read the CSV file into a pandas DataFrame
 
-# In[13]:
-
-
-os.chdir('C:\Manan_Inbound\Personal\Analyticon_2023')
-
-df_pokemon=pd.read_csv("pokedex_(Update_05.20).csv")
-
-
-# In[14]:
+df_pokemon = pd.read_csv(csv_url)
 
 
 df_poke=df_pokemon.copy()
@@ -53,9 +54,6 @@ df_poke['ability_1'].fillna('Unknown', inplace = True)
 df_poke['growth_rate'].fillna('Unknown', inplace = True)
 df_poke['weight_kg'].fillna(0, inplace = True)
 df_poke['egg_cycles'].fillna(0, inplace = True)
-
-
-# In[15]:
 
 
 import dash
@@ -91,10 +89,15 @@ app.layout = html.Div([
 ])
 
 # Function to read and encode an image from a zip file
-zip_path = 'C:\Manan_Inbound\Personal\Analyticon_2023\pokemon_images2.zip'
-def read_image_from_zip(zip_path, image_name):
-    with zipfile.ZipFile(zip_path) as zf:
+zip_url = "https://github.com/manansatsangi/Pokemon/raw/main/pokemon_images2.zip"
+
+def read_image_from_zip(zip_url, image_name):
+    response = requests.get(zip_url)
+    zip_data = BytesIO(response.content)
+    
+    with zipfile.ZipFile(zip_data) as zf:
         image_data = zf.read(image_name)
+    
     encoded_image = base64.b64encode(image_data).decode('utf-8')
     return encoded_image
 
@@ -115,7 +118,7 @@ def update_pokemon_info(pokemon1, pokemon2):
     # Create div elements for displaying Pokémon details
     pokemon1_details = html.Div([
         html.H2(pokemon1),
-        html.Img(src=f"data:image/png;base64,{read_image_from_zip(zip_path, f'{pokemon1}.png')}"),
+        html.Img(src=f"data:image/png;base64,{read_image_from_zip(zip_url, f'{pokemon1}.png')}"),
         html.Table([
             html.Tr([html.Th("Type 1"), html.Td(pokemon1_data['type_1'])]),
             html.Tr([html.Th("Type 2"), html.Td(pokemon1_data['type_2'])]),
@@ -124,7 +127,7 @@ def update_pokemon_info(pokemon1, pokemon2):
 
     pokemon2_details = html.Div([
         html.H2(pokemon2),
-        html.Img(src=f"data:image/png;base64,{read_image_from_zip(zip_path, f'{pokemon2}.png')}"),
+        html.Img(src=f"data:image/png;base64,{read_image_from_zip(zip_url, f'{pokemon2}.png')}"),
         html.Table([
             html.Tr([html.Th("Type 1"), html.Td(pokemon2_data['type_1'])]),
             html.Tr([html.Th("Type 2"), html.Td(pokemon2_data['type_2'])]),
@@ -162,10 +165,3 @@ def update_pokemon_info(pokemon1, pokemon2):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-
-
-# In[ ]:
-
-
-
-
