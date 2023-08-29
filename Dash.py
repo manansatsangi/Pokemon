@@ -71,6 +71,7 @@ import plotly.graph_objs as go
 # Create a Dash app
 app = dash.Dash(__name__)
 server = app.server
+
 # Load the Pokemon data
 df_pokemon = df_poke.copy()  # Replace with your Pokemon data
 
